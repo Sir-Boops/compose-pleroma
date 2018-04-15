@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+    pleroma:
+        build: ./docker-pleroma
+        volumes:
+            - ./config:/opt/pleroma/config
+            - ./uploads:/opt/pleroma/uploads
+        ports:
+            - '127.0.0.1:4000:4000'
+        networks:
+            - pleroma
+    postgres:
+        image: postgres:10.3-alpine
+        volumes:
+            - ./postgres:/var/lib/postgresql/data
+        networks:
+            - pleroma
+networks:
+    pleroma:

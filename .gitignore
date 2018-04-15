@@ -1,0 +1,4 @@
+config/
+uploads/
+postgres/
+docker-pleroma/
