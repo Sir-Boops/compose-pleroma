@@ -2,9 +2,6 @@
 
 # Grab the docker-pleroma docker file
 git clone https://git.sergal.org/Sir-Boops/docker-pleroma
-cd docker-pleroma 
-git checkout 530a3a666f2e85eed5366a9b2921405ac85c6315
-cd ..
 
 # Build the the docker-pleroma image and get the ID
 PLEROMA_NAME="pleroma:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
