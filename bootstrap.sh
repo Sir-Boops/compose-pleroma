@@ -31,7 +31,7 @@ docker build -t $PLEROMA_NAME docker-pleroma/
 
 # Generate and copy the config file out
 COND_NAME="pleroma_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-docker run -it --name $COND_NAME $PLEROMA_NAME ash -c 'su - -s /bin/ash pleroma -c cd pleroma && mix generate_config'
+docker run -it --name $COND_NAME $PLEROMA_NAME ash -c 'su - -s /bin/ash pleroma -c "cd /opt/pleroma && mix generate_config"'
 docker cp $COND_NAME:/opt/pleroma/config config
 docker rm $COND_NAME
 
