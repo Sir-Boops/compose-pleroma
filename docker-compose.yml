@@ -3,6 +3,8 @@ version: '3'
 services:
     pleroma:
         build: ./docker-pleroma
+        environment:
+            - RUN_MODE=%RUN_MODE%
         volumes:
             - ./config:/opt/pleroma/config
             - ./uploads:/opt/pleroma/uploads
