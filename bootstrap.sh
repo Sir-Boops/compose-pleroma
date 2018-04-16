@@ -8,10 +8,10 @@ echo ""
 echo "If you're not sure just type 'prod'"
 echo ""
 read -p "MODE: " RUN_MODE
-RUN_MODE=`echo $RUN_MODE | awk '{ print toupper($0) }'`
+RUN_MODE=`echo $RUN_MODE | awk '{ print tolower($0) }'`
 
 # Make sure the user input something sane
-if [ $RUN_MODE != "PROD" ] && [ $RUN_MODE != "DEV" ]; then
+if [ $RUN_MODE != "prod" ] && [ $RUN_MODE != "dev" ]; then
     echo ""
     echo "You have to choose 'prod' or 'dev'!"
     echo "Exiting, no changes made"
@@ -31,7 +31,7 @@ docker build -t $PLEROMA_NAME docker-pleroma/
 
 # Generate and copy the config file out
 COND_NAME="pleroma_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-docker run -it --name $COND_NAME $PLEROMA_NAME ash -c 'su - -s /bin/ash pleroma -c "cd /opt/pleroma && mix generate_config"'
+docker run -it --name $COND_NAME -e "MIX_ENV=`echo $RUN_MODE`" $PLEROMA_NAME ash -c 'su - -s /bin/ash pleroma -c "cd /opt/pleroma && mix generate_config"'
 docker cp $COND_NAME:/opt/pleroma/config config
 docker rm $COND_NAME
 
@@ -56,4 +56,4 @@ docker rm $DB_NAME
 # Get the config ready
 sed -i '/password:/c\  password: "pleroma",' config/generated_config.exs
 sed -i '/hostname:/c\  hostname: "postgres",' config/generated_config.exs
-cp config/generated_config.exs config/`echo $RUN_MODE | awk '{ print tolower($0) }'`.secret.exs
+cp config/generated_config.exs config/`echo $RUN_MODE`.secret.exs
