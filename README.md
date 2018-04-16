@@ -11,7 +11,7 @@ All you need to use this script is
 
 ## Installing
 
-!! Currently on installs in dev mode !!
+!! Currently only installs in dev mode !!
 
 1. `git clone https://git.sergal.org/Sir-Boops/compose-pleroma`
 2. `cd compose-pleroma`
