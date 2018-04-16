@@ -8,6 +8,7 @@ All you need to use this script is
 * docker
 * docker-compose ( That can handle v3 composer files )
 * git
+* awk
 
 ## Installing
 1. `git clone https://git.sergal.org/Sir-Boops/compose-pleroma`
