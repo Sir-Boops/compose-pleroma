@@ -3,6 +3,7 @@ version: '3'
 services:
     pleroma:
         build: ./docker-pleroma
+        restart: always
         environment:
             - MIX_ENV=%RUN_MODE%
         volumes:
@@ -16,6 +17,7 @@ services:
             - pleroma
     postgres:
         image: postgres:10.3-alpine
+        restart: always
         volumes:
             - ./postgres:/var/lib/postgresql/data
         networks:
