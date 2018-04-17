@@ -8,6 +8,8 @@ services:
         volumes:
             - ./config:/opt/pleroma/config
             - ./uploads:/opt/pleroma/uploads
+        depends_on:
+            - postgres
         ports:
             - '127.0.0.1:4000:4000'
         networks:
