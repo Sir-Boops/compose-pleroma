@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+    pleroma:
+        build: ./docker-pleroma
+        restart: always
+        environment:
+            - MIX_ENV=%RUN_MODE%
+        volumes:
+            - ./config:/opt/pleroma/config
+            - ./uploads:/opt/pleroma/uploads
+        depends_on:
+            - postgres
+            - tor
+        ports:
+            - '127.0.0.1:4000:4000'
+        networks:
+            - pleroma
+    tor:
+        build: ./docker-tor
+        restart: always
+        volumes:
+            - ./tor:/opt/tor/etc/tor
+            - ./pleroma_service:/opt/tor/var/lib/tor/pleroma_service
+        networks:
+            - pleroma
+    privoxy:
+        build: ./docker-privoxy
+        command: /opt/sbin/privoxy --no-daemon --user privoxy.privoxy /opt/config
+        restart: always
+        networks:
+            - pleroma
+        depends_on:
+            - tor
+        volumes:
+            - ./priv-config:/opt/config
+    postgres:
+        image: postgres:10.3-alpine
+        restart: always
+        volumes:
+            - ./postgres:/var/lib/postgresql/data
+        networks:
+            - pleroma
+networks:
+    pleroma:
