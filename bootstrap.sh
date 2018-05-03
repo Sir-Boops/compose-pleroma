@@ -129,4 +129,7 @@ docker rm $DB_NAME
 # Get the config ready
 sed -i '/password:/c\  password: "pleroma",' config/generated_config.exs
 sed -i '/hostname:/c\  hostname: "postgres",' config/generated_config.exs
+if [ $NET_TYPE == "darknet" ]; then
+    sed -i '0,/.*url.*/s/.*url.*/   url: [host: "'`cat pleroma_service/hostname`'", scheme: "http", port: 80],/' config/generated_config.exs
+fi
 cp config/generated_config.exs config/`echo $RUN_MODE`.secret.exs
