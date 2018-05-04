@@ -12,8 +12,6 @@ services:
         depends_on:
             - postgres
             - tor
-        ports:
-            - '127.0.0.1:4000:4000'
         networks:
             - pleroma
     tor:
