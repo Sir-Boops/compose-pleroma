@@ -17,13 +17,12 @@ echo "Will you be running this instance on the 'clearnet' or 'darknet' ? ( Type 
 echo ""
 echo "If you're not sure just type 'clearnet'"
 echo ""
-read -p "NET_TYPE: " NET_TYPE
+read -p "Network Type: " NET_TYPE
 NET_TYPE=`echo $NET_TYPE | awk '{ print tolower($0) }'`
 clear
 
 # Make sure the user chose a run type
 if [ $RUN_MODE != "prod" ] && [ $RUN_MODE != "dev" ]; then
-    echo ""
     echo "You have to choose 'prod' or 'dev' !"
     echo "Exiting, no changes made"
     echo ""
@@ -32,9 +31,27 @@ fi
 
 # Make sure the user chose a network type
 if [ $NET_TYPE != "clearnet" ] && [ $NET_TYPE != "darknet" ]; then
-    echo ""
     echo "You have to choose 'clearnet' or 'darknet' !"
     echo "Exiting, no changes made"
+    echo ""
+    exit 1
+fi
+
+# If using TOR check what onion version we are going to be using
+if [ $NET_TYPE == "darknet" ]; then
+    echo "Do you wish to use a 'v2' or a 'v3' onion address ? ( Type your answer without the ' )"
+    echo ""
+    echo "If you're not sure just type 'v3'"
+    echo ""
+    read -p "Onion Type: " ONION_TYPE
+    ONION_TYPE=`echo $ONION_TYPE | awk '{ print tolower($0) }'`
+    clear
+fi
+
+# Make sure the user typed something sane for ONION_TYPE
+if [ $ONION_TYPE != "v2" ] && [ $ONION_TYPE != "v3" ]; then
+    echo "You have to choose 'v2' or 'v3' !"
+    echo "Exiting no changes made"
     echo ""
     exit 1
 fi
@@ -115,6 +132,9 @@ if [ $NET_TYPE == "darknet" ]; then
     docker stop $COND_TOR_NAME
     docker rm $COND_TOR_NAME
     echo "HiddenServiceDir /opt/tor/var/lib/tor/pleroma_service/" >> tor/torrc
+    if [ $ONION_TYPE == "v3" ]; then
+        echo "HiddenServiceVersion 3" >> tor/torrc
+    fi
     echo "HiddenServicePort 80 pleroma:4000" >> tor/torrc
     clear
 fi
