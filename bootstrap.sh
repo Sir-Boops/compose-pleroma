@@ -98,7 +98,6 @@ docker build -t $PLEROMA_NAME docker-pleroma/
 if [ $NET_TYPE == "darknet" ]; then
     TOR_NAME="tor:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
     docker build -t $TOR_NAME docker-tor/
-    docker build docker-privoxy/
 fi
 clear
 
@@ -152,6 +151,8 @@ if [ $NET_TYPE == "darknet" ]; then
     docker stop $COND_TOR_NAME
     docker rm $COND_TOR_NAME
     chown 1000:1000 -R pleroma_service
+    chmod 700 pleroma_service
+    chmod 770 pleroma_service/*
     clear
 fi
 
