@@ -103,7 +103,10 @@ clear
 
 # Generate and copy the config file out
 echo "Generating pleroma config!"
-echo "If you selected darknet just put anything for the URL"
+echo ""
+if [ $NET_TYPE == "darknet" ]; then
+    echo "Since you're using TOR type anything you want for the URL"
+fi
 echo ""
 sleep 5
 COND_NAME="pleroma_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
@@ -203,5 +206,16 @@ clear
 
 echo "Done! Your pleroma instance has been setup and it ready to go!"
 echo ""
+if [ $NET_TYPE == "darknet" ]; then
+    echo "Your onion address is: `cat pleroma_service/hostname`"
+    echo ""
+fi
+
+if  [ $NET_TYPE == "clearnet" ]; then
+    echo "Pleroma has been setup to listen on '127.0.0.1:4000'"
+    echo ""
+    echo "For an nginx config example please see 'https://git.pleroma.social/pleroma/pleroma/blob/develop/installation/pleroma.nginx'"
+    echo ""
+fi
 echo "Now type 'docker-compose up -d' to start your instance!"
 echo ""
