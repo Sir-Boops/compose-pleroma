@@ -151,7 +151,7 @@ if [ $NET_TYPE == "darknet" ]; then
     docker cp $COND_TOR_NAME:/opt/tor/var/lib/tor/pleroma_service .
     docker stop $COND_TOR_NAME
     docker rm $COND_TOR_NAME
-    chown 1000:1000 pleroma_service
+    chown 1000:1000 -R pleroma_service
     clear
 fi
 
