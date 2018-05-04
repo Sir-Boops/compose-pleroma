@@ -11,7 +11,6 @@ services:
             - ./uploads:/opt/pleroma/uploads
         depends_on:
             - postgres
-            - tor
         networks:
             - pleroma
     tor:
