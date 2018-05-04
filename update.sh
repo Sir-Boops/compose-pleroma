@@ -1,6 +1,5 @@
 #!/bin/bash
 
-docker-compose down
 cd docker-pleroma && git pull && cd ..
 
 if [ -d "docker-tor" ]; then
@@ -11,4 +10,5 @@ if [ -d "docker-privoxy" ]; then
     cd docker-privoxy && git pull && cd ..
 fi
 
+docker-compose down
 docker-compose up -d --build
