@@ -1,6 +1,6 @@
 # Compose-pleroma
 
-This script will automatically build and initialize a basic pleroma install 
+This script will automatically build and initialize a basic pleroma install. With optional onion federation support! 
 
 ## What you need
 All you need to use this script is
