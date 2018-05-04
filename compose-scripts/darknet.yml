@@ -17,6 +17,8 @@ services:
     tor:
         build: ./docker-tor
         restart: always
+        depends_on:
+            - pleroma
         volumes:
             - ./tor:/opt/tor/etc/tor
             - ./pleroma_service:/opt/tor/var/lib/tor/pleroma_service
