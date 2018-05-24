@@ -10,5 +10,6 @@ if [ -d "docker-privoxy" ]; then
     cd docker-privoxy && git pull && cd ..
 fi
 
+docker-compose build
 docker-compose down
-docker-compose up -d --build
+docker-compose up -d
