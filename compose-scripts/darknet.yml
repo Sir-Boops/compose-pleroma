@@ -13,6 +13,7 @@ services:
             - postgres
         networks:
             - pleroma
+
     tor:
         build: ./docker-tor
         restart: always
@@ -23,9 +24,9 @@ services:
             - ./pleroma_service:/opt/tor/var/lib/tor/pleroma_service
         networks:
             - pleroma
+
     privoxy:
         build: ./docker-privoxy
-        command: /opt/sbin/privoxy --no-daemon --user privoxy.privoxy /opt/config
         restart: always
         networks:
             - pleroma
@@ -33,6 +34,7 @@ services:
             - tor
         volumes:
             - ./priv-config:/opt/config
+
     postgres:
         image: postgres:10.3-alpine
         restart: always
@@ -40,5 +42,6 @@ services:
             - ./postgres:/var/lib/postgresql/data
         networks:
             - pleroma
+
 networks:
     pleroma:
