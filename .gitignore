@@ -2,3 +2,4 @@ config/
 uploads/
 postgres/
 docker-pleroma/
+docker-compose.yml
