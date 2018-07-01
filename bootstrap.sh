@@ -49,11 +49,13 @@ if [ "$NET_TYPE" == "darknet" ]; then
 fi
 
 # Make sure the user typed something sane for ONION_TYPE
-if [ "$ONION_TYPE" != "v2" ] && [ "$ONION_TYPE" != "v3" ]; then
+if [ "$NET_TYPE" == "darknet" ]; then
+  if [ "$ONION_TYPE" != "v2" ] && [ "$ONION_TYPE" != "v3" ]; then
     echo "You have to choose 'v2' or 'v3' !"
     echo "Exiting no changes made"
     echo ""
     exit 1
+  fi
 fi
 
 # Copy out the needed docker-compose.yml file
