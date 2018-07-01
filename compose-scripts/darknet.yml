@@ -2,7 +2,7 @@ version: '3'
 
 services:
     pleroma:
-        build: ./docker-pleroma
+        image: sirboops/pleroma
         restart: always
         environment:
             - MIX_ENV=%RUN_MODE%
@@ -15,7 +15,7 @@ services:
             - pleroma
 
     tor:
-        build: ./docker-tor
+        image: sirboops/tor
         restart: always
         depends_on:
             - pleroma
@@ -26,7 +26,7 @@ services:
             - pleroma
 
     privoxy:
-        build: ./docker-privoxy
+        image: sirboops/privoxy
         restart: always
         networks:
             - pleroma

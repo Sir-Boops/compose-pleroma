@@ -2,7 +2,7 @@ version: '3'
 
 services:
     pleroma:
-        build: ./docker-pleroma
+        image: sirboops/pleroma
         restart: always
         environment:
             - MIX_ENV=%RUN_MODE%
