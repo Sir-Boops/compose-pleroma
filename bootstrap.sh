@@ -23,29 +23,29 @@ clear
 
 # Make sure the user chose a run type
 if [ "$RUN_MODE" != "prod" ] && [ "$RUN_MODE" != "dev" ]; then
-    echo "You have to choose 'prod' or 'dev' !"
-    echo "Exiting, no changes made"
-    echo ""
-    exit 1
+  echo "You have to choose 'prod' or 'dev' !"
+  echo "Exiting, no changes made"
+  echo ""
+  exit 1
 fi
 
 # Make sure the user chose a network type
 if [ "$NET_TYPE" != "clearnet" ] && [ "$NET_TYPE" != "darknet" ]; then
-    echo "You have to choose 'clearnet' or 'darknet' !"
-    echo "Exiting, no changes made"
-    echo ""
-    exit 1
+  echo "You have to choose 'clearnet' or 'darknet' !"
+  echo "Exiting, no changes made"
+  echo ""
+  exit 1
 fi
 
 # If using TOR check what onion version we are going to be using
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Do you wish to use a 'v2' or a 'v3' onion address ? ( Type your answer without the ' )"
-    echo ""
-    echo "If you're not sure just type 'v3'"
-    echo ""
-    read -p "Onion Type: " ONION_TYPE
-    ONION_TYPE=`echo $ONION_TYPE | awk '{ print tolower($0) }'`
-    clear
+  echo "Do you wish to use a 'v2' or a 'v3' onion address ? ( Type your answer without the ' )"
+  echo ""
+  echo "If you're not sure just type 'v3'"
+  echo ""
+  read -p "Onion Type: " ONION_TYPE
+  ONION_TYPE=`echo $ONION_TYPE | awk '{ print tolower($0) }'`
+  clear
 fi
 
 # Make sure the user typed something sane for ONION_TYPE
@@ -63,9 +63,9 @@ echo "Copying docker-compose.yml config"
 echo ""
 sleep 1
 if [ "$NET_TYPE" == "darknet" ]; then
-    cp compose-scripts/darknet.yml docker-compose.yml
+  cp compose-scripts/darknet.yml docker-compose.yml
 else
-    cp compose-scripts/clearnet.yml docker-compose.yml
+  cp compose-scripts/clearnet.yml docker-compose.yml
 fi
 clear
 
@@ -84,8 +84,8 @@ git clone https://git.sergal.org/Sir-Boops/docker-pleroma
 
 # Should we clone the tor image?
 if [ "$NET_TYPE" == "darknet" ]; then
-    git clone https://git.sergal.org/Sir-Boops/docker-tor
-    git clone https://git.sergal.org/Sir-Boops/docker-privoxy
+  git clone https://git.sergal.org/Sir-Boops/docker-tor
+  git clone https://git.sergal.org/Sir-Boops/docker-privoxy
 fi
 clear
 
@@ -98,8 +98,8 @@ docker build -t $PLEROMA_NAME docker-pleroma/
 
 # Build the extras for the darknet
 if [ "$NET_TYPE" == "darknet" ]; then
-    TOR_NAME="tor:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-    docker build -t $TOR_NAME docker-tor/
+  TOR_NAME="tor:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
+  docker build -t $TOR_NAME docker-tor/
 fi
 clear
 
@@ -107,7 +107,7 @@ clear
 echo "Generating pleroma config!"
 echo ""
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Since you're using TOR type anything you want for the URL"
+  echo "Since you're using TOR type anything you want for the URL"
 fi
 echo ""
 sleep 5
@@ -127,53 +127,53 @@ clear
 
 # Setup the tor config if need be
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Creating tor config"
-    echo ""
-    sleep 1
-    COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-    docker run -it --name $COND_TOR_NAME -d $TOR_NAME
-    docker cp $COND_TOR_NAME:/opt/tor/etc/tor .
-    docker stop $COND_TOR_NAME
-    docker rm $COND_TOR_NAME
-    echo "HiddenServiceDir /opt/tor/var/lib/tor/pleroma_service/" >> tor/torrc
-    if [ "$ONION_TYPE" == "v3" ]; then
-        echo "HiddenServiceVersion 3" >> tor/torrc
-    fi
-    echo "HiddenServicePort 80 pleroma:4000" >> tor/torrc
-    clear
+  echo "Creating tor config"
+  echo ""
+  sleep 1
+  COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
+  docker run -it --name $COND_TOR_NAME -d $TOR_NAME
+  docker cp $COND_TOR_NAME:/opt/tor/etc/tor .
+  docker stop $COND_TOR_NAME
+  docker rm $COND_TOR_NAME
+  echo "HiddenServiceDir /opt/tor/var/lib/tor/pleroma_service/" >> tor/torrc
+  if [ "$ONION_TYPE" == "v3" ]; then
+    echo "HiddenServiceVersion 3" >> tor/torrc
+  fi
+  echo "HiddenServicePort 80 pleroma:4000" >> tor/torrc
+  clear
 fi
 
 # Copy out the .onion keys
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Generating onion address"
-    echo ""
-    sleep 1
-    COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-    CONF_PATH=`realpath tor`
-    docker run -it --name $COND_TOR_NAME --add-host "pleroma:127.0.0.1" -v $CONF_PATH:/opt/tor/etc/tor -d $TOR_NAME
-    sleep 10
-    docker cp $COND_TOR_NAME:/opt/tor/var/lib/tor/pleroma_service .
-    docker stop $COND_TOR_NAME
-    docker rm $COND_TOR_NAME
-    chown 1000:1000 -R pleroma_service
-    chmod 700 pleroma_service
-    chmod 770 pleroma_service/*
-    clear
+  echo "Generating onion address"
+  echo ""
+  sleep 1
+  COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
+  CONF_PATH=`realpath tor`
+  docker run -it --name $COND_TOR_NAME --add-host "pleroma:127.0.0.1" -v $CONF_PATH:/opt/tor/etc/tor -d $TOR_NAME
+  sleep 10
+  docker cp $COND_TOR_NAME:/opt/tor/var/lib/tor/pleroma_service .
+  docker stop $COND_TOR_NAME
+  docker rm $COND_TOR_NAME
+  chown 1000:1000 -R pleroma_service
+  chmod 700 pleroma_service
+  chmod 770 pleroma_service/*
+  clear
 fi
 
 # Setup the http proxy
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Creating privoxy config"
-    echo ""
-    sleep 1
-    # Create the Privoxy config
-    echo "listen-address  0.0.0.0:8118" > priv-config
-    echo "forward-socks5t .  tor:9050    ." >> priv-config
+  echo "Creating privoxy config"
+  echo ""
+  sleep 1
+  # Create the Privoxy config
+  echo "listen-address  0.0.0.0:8118" > priv-config
+  echo "forward-socks5t .  tor:9050    ." >> priv-config
 
-    echo "" >> config/generated_config.exs
-    echo "config :pleroma, :http," >> config/generated_config.exs
-    echo '  proxy_url: "privoxy:8118"' >> config/generated_config.exs
-    clear
+  echo "" >> config/generated_config.exs
+  echo "config :pleroma, :http," >> config/generated_config.exs
+  echo '  proxy_url: "privoxy:8118"' >> config/generated_config.exs
+  clear
 fi
 
 # Init the database
@@ -201,7 +201,7 @@ sleep 1
 sed -i '/password:/c\  password: "pleroma",' config/generated_config.exs
 sed -i '/hostname:/c\  hostname: "postgres",' config/generated_config.exs
 if [ "$NET_TYPE" == "darknet" ]; then
-    sed -i '0,/.*url.*/s/.*url.*/   url: [host: "'`cat pleroma_service/hostname`'", scheme: "http", port: 80],/' config/generated_config.exs
+  sed -i '0,/.*url.*/s/.*url.*/   url: [host: "'`cat pleroma_service/hostname`'", scheme: "http", port: 80],/' config/generated_config.exs
 fi
 cp config/generated_config.exs config/`echo $RUN_MODE`.secret.exs
 clear
@@ -209,15 +209,15 @@ clear
 echo "Done! Your pleroma instance has been setup and it ready to go!"
 echo ""
 if [ "$NET_TYPE" == "darknet" ]; then
-    echo "Your onion address is: `cat pleroma_service/hostname`"
-    echo ""
+  echo "Your onion address is: `cat pleroma_service/hostname`"
+  echo ""
 fi
 
 if  [ "$NET_TYPE" == "clearnet" ]; then
-    echo "Pleroma has been setup to listen on '127.0.0.1:4000'"
-    echo ""
-    echo "For an nginx config example please see 'https://git.pleroma.social/pleroma/pleroma/blob/develop/installation/pleroma.nginx'"
-    echo ""
+  echo "Pleroma has been setup to listen on '127.0.0.1:4000'"
+  echo ""
+  echo "For an nginx config example please see 'https://git.pleroma.social/pleroma/pleroma/blob/develop/installation/pleroma.nginx'"
+  echo ""
 fi
 echo "Now type 'docker-compose up -d' to start your instance!"
 echo ""
