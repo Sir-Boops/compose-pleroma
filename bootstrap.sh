@@ -77,29 +77,15 @@ sed -i "s/%RUN_MODE%/$RUN_MODE/" docker-compose.yml
 clear
 
 # Grab the docker-pleroma docker file
-echo "Cloning required repos"
+echo "Pulling required required repos"
 echo ""
 sleep 1
-git clone https://git.sergal.org/Sir-Boops/docker-pleroma
+docker pull sirboops/pleroma
 
 # Should we clone the tor image?
 if [ "$NET_TYPE" == "darknet" ]; then
-  git clone https://git.sergal.org/Sir-Boops/docker-tor
-  git clone https://git.sergal.org/Sir-Boops/docker-privoxy
-fi
-clear
-
-# Build the the docker-pleroma image and get the ID
-echo "Building required docker containers"
-echo ""
-sleep 1
-PLEROMA_NAME="pleroma:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-docker build -t $PLEROMA_NAME docker-pleroma/
-
-# Build the extras for the darknet
-if [ "$NET_TYPE" == "darknet" ]; then
-  TOR_NAME="tor:`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-  docker build -t $TOR_NAME docker-tor/
+  docker pull sirboops/tor
+  docker pull sirboops/privoxy
 fi
 clear
 
@@ -108,11 +94,11 @@ echo "Generating pleroma config!"
 echo ""
 if [ "$NET_TYPE" == "darknet" ]; then
   echo "Since you're using TOR type anything you want for the URL"
+  echo ""
 fi
-echo ""
 sleep 5
 COND_NAME="pleroma_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-docker run -it --name $COND_NAME $PLEROMA_NAME ash -c 'cd /opt/pleroma && mix generate_config'
+docker run -it --name $COND_NAME sirboops/pleroma ash -c 'cd /opt/pleroma && mix generate_config'
 docker cp $COND_NAME:/opt/pleroma/config config
 docker rm $COND_NAME
 clear
@@ -131,7 +117,7 @@ if [ "$NET_TYPE" == "darknet" ]; then
   echo ""
   sleep 1
   COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
-  docker run -it --name $COND_TOR_NAME -d $TOR_NAME
+  docker run -it --name $COND_TOR_NAME -d sirboops/tor
   docker cp $COND_TOR_NAME:/opt/tor/etc/tor .
   docker stop $COND_TOR_NAME
   docker rm $COND_TOR_NAME
@@ -150,7 +136,7 @@ if [ "$NET_TYPE" == "darknet" ]; then
   sleep 1
   COND_TOR_NAME="tor_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
   CONF_PATH=`realpath tor`
-  docker run -it --name $COND_TOR_NAME --add-host "pleroma:127.0.0.1" -v $CONF_PATH:/opt/tor/etc/tor -d $TOR_NAME
+  docker run -it --name $COND_TOR_NAME --add-host "pleroma:127.0.0.1" -v $CONF_PATH:/opt/tor/etc/tor -d sirboops/tor
   sleep 10
   docker cp $COND_TOR_NAME:/opt/tor/var/lib/tor/pleroma_service .
   docker stop $COND_TOR_NAME
@@ -190,6 +176,7 @@ docker exec $DB_NAME psql -U postgres -c "ALTER user pleroma with encrypted pass
 docker exec $DB_NAME psql -U postgres -c "GRANT ALL ON ALL tables IN SCHEMA public TO pleroma;" pleroma_dev
 docker exec $DB_NAME psql -U postgres -c "GRANT ALL ON ALL sequences IN SCHEMA public TO pleroma;" pleroma_dev
 docker exec $DB_NAME psql -U postgres -c "CREATE EXTENSION citext;" pleroma_dev
+docker exec $DB_NAME psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;" pleroma_dev
 docker stop $DB_NAME
 docker rm $DB_NAME
 clear
