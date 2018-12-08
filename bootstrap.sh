@@ -54,10 +54,6 @@ docker exec $DB_NAME psql -U postgres -c 'CREATE user pleroma;'
 docker exec $DB_NAME psql -U postgres -c 'CREATE DATABASE pleroma_dev OWNER pleroma;'
 docker exec $DB_NAME psql -U postgres -c "ALTER user pleroma with encrypted password 'pleroma';" pleroma_dev
 docker exec $DB_NAME psql -U postgres -c 'ALTER USER pleroma WITH SUPERUSER;'
-#docker exec $DB_NAME psql -U postgres -c "GRANT ALL ON ALL tables IN SCHEMA public TO pleroma;" pleroma_dev
-#docker exec $DB_NAME psql -U postgres -c "GRANT ALL ON ALL sequences IN SCHEMA public TO pleroma;" pleroma_dev
-#docker exec $DB_NAME psql -U postgres -c "CREATE EXTENSION citext;" pleroma_dev
-#docker exec $DB_NAME psql -U postgres -c "CREATE EXTENSION IF NOT EXISTS pg_trgm;" pleroma_dev
 docker stop $DB_NAME
 docker rm $DB_NAME
 clear
