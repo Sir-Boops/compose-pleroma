@@ -14,16 +14,41 @@ clear
 
 # Make sure the user chose a run type
 if [ "$RUN_MODE" != "prod" ] && [ "$RUN_MODE" != "dev" ]; then
-  echo "You have to choose 'prod' or 'dev' !"
-  echo "Exiting, no changes made"
-  echo ""
-  exit 1
+	echo "You have to choose 'prod' or 'dev' !"
+	echo ""
+	echo "Exiting, no changes made"
+	echo ""
+	exit 1
+fi
+
+# See if we are using caddy or not
+echo "Would you like to use 'caddy' or your 'own' webserver?"
+echo ""
+echo "If you're not sure type 'caddy'"
+echo ""
+read -p "SERVER: " SERVER_TYPE
+SERVER_TYPE=`echo $SERVER_TYPE | awk '{ print tolower($0) }'`
+clear
+
+# Make sure the user picked one of the choices
+if [ "$SERVER_TYPE" != "caddy" ] && [ "$SERVER_TYPE" != "own" ]; then
+	echo "You have to choose 'caddy' or 'own' for your server type!"
+	echo ""
+	echo "Exiting, no changes made"
+	echo ""
+	exit 1
 fi
 
 # Update the compose file
 echo "Setting run mode in docker-compose.yml"
 echo ""
 sleep 1
+if [ "$SERVER_TYPE" == "caddy" ]; then
+	cp compose-scripts/caddy.yml docker-compose.yml
+fi
+if [ "$SERVER_TYPE" == "own" ]; then
+	cp compose-scripts/own.yml docker-compose.yml
+fi
 sed -i "s/%RUN_MODE%/$RUN_MODE/" docker-compose.yml
 clear
 
@@ -43,7 +68,7 @@ chown 1000:1000 uploads
 clear
 
 # Init the database
-echo "Initlizing the database"
+echo "Initlizing the database ( This can take a while! )"
 echo ""
 sleep 1
 DB_NAME="db_`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo ''`"
@@ -74,12 +99,32 @@ docker rm $COND_NAME
 cp config/generated_config.exs config/prod.secret.exs
 clear
 
-echo "Done! Your pleroma instance has been setup and it ready to go!"
-echo ""
+# Generate the caddyfile if the user wanted it
+if [ "$SERVER_TYPE" == "caddy" ]; then
+	echo "Generating the caddyfile"
+	cp compose-scripts/caddyfile caddyfile
+	echo ""
+	echo "What is your servers domain name?"
+	read -p "DOMAIN: " DOMAIN
+	DOMAIN=`echo $DOMAIN | awk '{ print tolower($0) }'`
+	echo ""
+	echo "What is your email?"
+	read -p "EMAIL: " EMAIL
+	EMAIL=`echo $EMAIL | awk '{ print tolower($0) }'`
+	echo ""
+	sed -i "s/%DOMAIN%/$DOMAIN/" caddyfile
+	sed -i "s/%EMAIL%/$EMAIL/" caddyfile
+	mkdir caddy
+	clear
+else
+	echo "Pleroma has been setup to listen on '127.0.0.1:4000'"
+	echo ""
+	echo "For an nginx config example please see 'https://git.pleroma.social/pleroma/pleroma/blob/develop/installation/pleroma.nginx'"
+	echo ""
+fi
 
-echo "Pleroma has been setup to listen on '127.0.0.1:4000'"
-echo ""
-echo "For an nginx config example please see 'https://git.pleroma.social/pleroma/pleroma/blob/develop/installation/pleroma.nginx'"
+
+echo "Done! Your pleroma instance has been setup and it ready to go!"
 echo ""
 echo "Now type 'docker-compose up -d' to start your instance!"
 echo ""
